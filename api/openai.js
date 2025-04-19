@@ -1,4 +1,10 @@
-const apiKey = 'API_KEY';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
+
+require('dotenv').config(); 
+
+const axios = require('axios');
+
+
+const apiKey = process.env.API_KEY;
 
 export async function getResponseFromOpenAI(prompt) {
     try {
