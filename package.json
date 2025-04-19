@@ -1,0 +1,21 @@
+{
+  "name": "lavia-chat",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "gltf-loader": "^1.0.0",
+    "openai": "^4.94.0",
+    "three": "^0.175.0"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "description": ""
+}
