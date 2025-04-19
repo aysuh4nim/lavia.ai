@@ -1,8 +1,7 @@
+import dotenv from 'dotenv';
+import axios from 'axios';
 
-require('dotenv').config(); 
-
-const axios = require('axios');
-
+dotenv.config();
 
 const apiKey = process.env.API_KEY;
 
@@ -24,4 +23,3 @@ export async function getResponseFromOpenAI(prompt) {
         return "Bir hata oluştu.";
     }
 }
-

@@ -2,6 +2,7 @@
   "name": "lavia-chat",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
@@ -9,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.8.4",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "gltf-loader": "^1.0.0",
