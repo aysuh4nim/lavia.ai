@@ -6,8 +6,52 @@
     <title>Lavia ile Sohbet</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-      body { margin: 0; overflow: hidden; }
-      canvas { display: block; }
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #000;
+      }
+      canvas {
+        display: block;
+      }
+
+      /* Chat Bubble */
+      .chat-bubble {
+        position: absolute;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 20px;
+        font-size: 18px;
+        max-width: 60%;
+        text-align: center;
+        font-family: 'Segoe UI', sans-serif;
+      }
+
+      /* Microphone Button */
+      #micButton {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 16px;
+        font-size: 22px;
+        border: none;
+        border-radius: 50%;
+        background: #31abc9;
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        transition: background 0.3s ease;
+      }
+
+      #micButton:hover {
+        background: #2499b2;
+      }
     </style>
 
     <!-- Importmap - Three.js modül yolları -->
@@ -32,6 +76,7 @@
       import * as THREE from 'three';
       import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+      // Canvas ve Scene ayarları
       const canvas = document.getElementById('laviaCanvas');
       const scene = new THREE.Scene();
 
@@ -47,6 +92,7 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(window.devicePixelRatio);
 
+      // Işık ekleme
       const light = new THREE.DirectionalLight(0xffffff, 1);
       light.position.set(0, 5, 5);
       scene.add(light);
@@ -54,13 +100,14 @@
       const ambient = new THREE.AmbientLight(0x404040, 2);
       scene.add(ambient);
 
+      // Lavia modelini yükleme
       const loader = new GLTFLoader();
       loader.load(
         './lavia/laviaModel.glb',
         function (gltf) {
           console.log('✅ Lavia modeli yüklendi:', gltf);
 
-          // 💖 Yukarı çıkarıyoruz
+          // Modelin pozisyonunu ayarlama
           gltf.scene.position.y = 0.9;
 
           scene.add(gltf.scene);
@@ -73,12 +120,14 @@
         }
       );
 
+      // Animasyon fonksiyonu
       function animate() {
         requestAnimationFrame(animate);
         renderer.render(scene, camera);
       }
       animate();
 
+      // Pencere boyutu değişirse, renderer'ı ve kamerayı ayarla
       window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -87,4 +136,3 @@
     </script>
   </body>
 </html>
-

@@ -1,149 +1,147 @@
 body, html {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', sans-serif;
-    color: white;
-    height: 100%;
-    background: url('assets/AysAi.jpg') no-repeat center center fixed;
-    background-size: cover;
-  }
-  
-  .header {
-    position: fixed;
-    top: -45px;
-    right: 10px;
-    z-index: 1000;
-    background: none;
-    padding: 0;
-  }
-  
-  .lavia-logo {
-    height: 200px;
-    display: block;
-  }
-  
-  .nav-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 60px;
-    background: rgba(0, 0, 0, 0.4);
-  }
-  
-  .nav-bar ul {
-    list-style: none;
-    display: flex;
-    gap: 30px;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .nav-bar a {
-    text-decoration: none;
-    color: white;
-    font-size: 18px;
-    font-weight: 500;
-  }
-  
-  .main-content {
-    text-align: left;
-    margin-top: 15%;
-    margin-left: 10%;
-    position: relative;
-  }
-  
-  .tagline {
-    font-size: 20px;
-    margin-top: -6px;
-    margin-left: 35px;
-    font-style: italic;
-    position: relative;
-    z-index: 5; /* ← Bu yazıyı ön plana çıkarır */
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+  height: 100%;
+  background: url('assets/AysAi.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
 
-  }
-  
-  /* AysAi Text */
-  .aysai-text {
-    font-size: 130px;
-    font-weight: bold;
-    font-family: 'Monaco', monospace;
-    position: relative;
-    display: inline-block;
-  }
-  
-  .ays {
-    color: #31abc9; /* Ays için renk */
-    position: relative;
-    z-index: 2;
-  }
-  
-  .ai {
-    color: #ffffff; /* Ai için renk */
-    position: relative;
-    z-index: 5; /* ← Bu yazıyı ön plana çıkarır */
+.header {
+  position: fixed;
+  top: -45px;
+  right: 10px;
+  z-index: 1000;
+  background: none;
+  padding: 0;
+}
 
-  }
-  
-  .ays::before {
-    content: '';
-    position: absolute;
-    top: -365px;
-    left: -390px;
-    width: 990px;
-    height: 900px;
-    background: url('assets/yuvarlak.png') no-repeat center center;
-    background-size: contain;
-    z-index: 1;
-    pointer-events: none;
-  }
+.lavia-logo {
+  height: 200px;
+  display: block;
+}
 
-  .chat-page {
-    margin: 0;
-    padding: 0;
-    background: url('assets/laviabackground.jpeg') no-repeat center center fixed;
-    background-size: cover;
-    font-family: 'Segoe UI', sans-serif;
-    overflow: hidden;
-  }
-  
-  .chat-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-  }
-  
-  #laviaCanvas {
-    width: 100%;
-    height: 100vh;
-    display: block;
-  }
-  
-  .chat-bubble {
-    position: absolute;
-    bottom: 100px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.7);
-    color: white;
-    padding: 15px 25px;
-    border-radius: 20px;
-    font-size: 18px;
-    max-width: 60%;
-    text-align: center;
-  }
-  
-  #micButton {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 12px 16px;
-    font-size: 22px;
-    border: none;
-    border-radius: 50%;
-    background: #31abc9;
-    color: white;
-    cursor: pointer;
-  }
-  
+.nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.nav-bar ul {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-bar a {
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.main-content {
+  text-align: left;
+  margin-top: 15%;
+  margin-left: 10%;
+  position: relative;
+}
+
+.tagline {
+  font-size: 20px;
+  margin-top: -6px;
+  margin-left: 35px;
+  font-style: italic;
+  position: relative;
+  z-index: 5;
+}
+
+/* AysAi Text */
+.aysai-text {
+  font-size: 130px;
+  font-weight: bold;
+  font-family: 'Monaco', monospace;
+  position: relative;
+  display: inline-block;
+}
+
+.ays {
+  color: #31abc9; /* Ays için renk */
+  position: relative;
+  z-index: 2;
+}
+
+.ai {
+  color: #ffffff; /* Ai için renk */
+  position: relative;
+  z-index: 5;
+}
+
+.ays::before {
+  content: '';
+  position: absolute;
+  top: -365px;
+  left: -390px;
+  width: 990px;
+  height: 900px;
+  background: url('assets/yuvarlak.png') no-repeat center center;
+  background-size: contain;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.chat-page {
+  margin: 0;
+  padding: 0;
+  background: url('assets/laviabackground.jpeg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+.chat-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#laviaCanvas {
+  width: 100%;
+  height: 100vh;
+  display: block;
+}
+
+.chat-bubble {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 20px;
+  font-size: 18px;
+  max-width: 60%;
+  text-align: center;
+}
+
+#micButton {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 16px;
+  font-size: 22px;
+  border: none;
+  border-radius: 50%;
+  background: #31abc9;
+  color: white;
+  cursor: pointer;
+}
+
   

@@ -11,12 +11,17 @@ const app = express();
 app.use(express.json());
 
 // Statik dosyaları servis etmek (index.html)
-app.use(express.static(path.join(__dirname, '')));  // Kök dizindeki tüm dosyaları statik olarak sunar
+app.use(express.static(path.join(__dirname, 'public')));  // public klasörünü kullanmak
 
-app.post('/ask', async (req, res) => {
+// API Endpoint
+app.post('/api/openai', async (req, res) => {
     const prompt = req.body.prompt;
-    const answer = await getResponseFromOpenAI(prompt);
-    res.json({ answer });
+    try {
+        const answer = await getResponseFromOpenAI(prompt);
+        res.json({ reply: answer });
+    } catch (error) {
+        res.status(500).json({ error: 'OpenAI API hatası: ' + error.message });
+    }
 });
 
 app.listen(3000, () => {
