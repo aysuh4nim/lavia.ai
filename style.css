@@ -97,14 +97,10 @@ body, html {
     pointer-events: none;
   }
 
-
-
-
-  
   .chat-page {
     margin: 0;
     padding: 0;
-    background: url('assets/AysAi.jpg') no-repeat center center fixed;
+    background: url('assets/laviabackground.jpeg') no-repeat center center fixed;
     background-size: cover;
     font-family: 'Segoe UI', sans-serif;
     overflow: hidden;

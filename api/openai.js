@@ -3,7 +3,8 @@ import axios from 'axios';
 
 dotenv.config();
 
-const apiKey = process.env.API_KEY;
+const apiKey = process.env.OPENAI_API_KEY;
+
 
 export async function getResponseFromOpenAI(prompt) {
     try {
