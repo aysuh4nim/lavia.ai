@@ -1,222 +1,146 @@
-<!DOCTYPE html>
-<html lang="tr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lavia ile Sohbet</title>
-    <link rel="stylesheet" href="style.css" />
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-        font-family: 'Segoe UI', sans-serif;
-        background-color: #000;
-      }
-      canvas {
-        display: block;
-      }
+<script type="module">
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-      /* Chat Bubble */
-      .chat-bubble {
-        position: absolute;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 15px 25px;
-        border-radius: 20px;
-        font-size: 18px;
-        max-width: 60%;
-        text-align: center;
-        font-family: 'Segoe UI', sans-serif;
-      }
+  // Canvas ve Scene ayarları
+  const canvas = document.getElementById('laviaCanvas');
+  const scene = new THREE.Scene();
 
-      /* Microphone Button */
-      #micButton {
-        position: absolute;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 12px 16px;
-        font-size: 22px;
-        border: none;
-        border-radius: 50%;
-        background: #31abc9;
-        color: white;
-        cursor: pointer;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        transition: background 0.3s ease;
-      }
+  const camera = new THREE.PerspectiveCamera(
+    45,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+  camera.position.set(0, 1.6, 3);
 
-      #micButton:hover {
-        background: #2499b2;
-      }
-    </style>
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
 
-    <!-- Importmap - Three.js modül yolları -->
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"
-        }
-      }
-    </script>
-  </head>
+  // Işık ekleme
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(0, 5, 5);
+  scene.add(light);
 
-  <body class="chat-page">
-    <div class="chat-container">
-      <canvas id="laviaCanvas"></canvas>
-      <div class="chat-bubble" id="chatBubble">Merhaba! Konuşmak için mikrofon simgesine bas.</div>
-      <button id="micButton">🎙️</button>
-    </div>
+  const ambient = new THREE.AmbientLight(0x404040, 2);
+  scene.add(ambient);
 
-    <script type="module">
-      import * as THREE from 'three';
-      import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  // Lavia modelini yükleme
+  const loader = new GLTFLoader();
+  loader.load(
+    './lavia/laviaModel.glb',
+    function (gltf) {
+      console.log('✅ Lavia modeli yüklendi:', gltf);
 
-      // Canvas ve Scene ayarları
-      const canvas = document.getElementById('laviaCanvas');
-      const scene = new THREE.Scene();
+      // Modelin pozisyonunu ayarlama
+      gltf.scene.position.y = 0.9;
 
-      const camera = new THREE.PerspectiveCamera(
-        45,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
-      );
-      camera.position.set(0, 1.6, 3);
+      scene.add(gltf.scene);
+    },
+    function (xhr) {
+      console.log(`Yükleniyor: ${Math.round((xhr.loaded / xhr.total) * 100)}%`);
+    },
+    function (error) {
+      console.error('❌ Lavia modeli yüklenemedi:', error);
+    }
+  );
 
-      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
+  // Animasyon fonksiyonu
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+  animate();
 
-      // Işık ekleme
-      const light = new THREE.DirectionalLight(0xffffff, 1);
-      light.position.set(0, 5, 5);
-      scene.add(light);
+  // Pencere boyutu değişirse, renderer'ı ve kamerayı ayarla
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
 
-      const ambient = new THREE.AmbientLight(0x404040, 2);
-      scene.add(ambient);
+  // Sohbet başlatma ve durdurma
+  const micButton = document.getElementById('micButton');
+  const chatBubble = document.getElementById('chatBubble');
+  let isChatting = false;
 
-      // Lavia modelini yükleme
-      const loader = new GLTFLoader();
-      loader.load(
-        './lavia/laviaModel.glb',
-        function (gltf) {
-          console.log('✅ Lavia modeli yüklendi:', gltf);
+  micButton.onclick = () => {
+    if (isChatting) {
+      stopChat();
+    } else {
+      startChat();
+    }
+  };
 
-          // Modelin pozisyonunu ayarlama
-          gltf.scene.position.y = 0.9;
+  function startChat() {
+    chatBubble.textContent = "Lavia: Merhaba! Ben Lavia, seninle sohbet etmek için buradayım.";
+    isChatting = true;
+    micButton.textContent = "🛑 Sohbeti Kapat"; 
+    startVoiceRecognition(); 
+  }
 
-          scene.add(gltf.scene);
-        },
-        function (xhr) {
-          console.log(`Yükleniyor: ${Math.round((xhr.loaded / xhr.total) * 100)}%`);
-        },
-        function (error) {
-          console.error('❌ Lavia modeli yüklenemedi:', error);
-        }
-      );
+  function stopChat() {
+    chatBubble.textContent = "Lavia: Görüşmek üzere!";
+    isChatting = false;
+    micButton.textContent = "🎙️ Sohbete Başla"; 
+  }
 
-      // Animasyon fonksiyonu
-      function animate() {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-      }
-      animate();
+  function startVoiceRecognition() {
+    if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+      chatBubble.textContent = "Bu tarayıcı ses tanımayı desteklemiyor!";
+    } else {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'tr-TR';
+      recognition.interimResults = true;
 
-      // Pencere boyutu değişirse, renderer'ı ve kamerayı ayarla
-      window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
+      recognition.start();
+      chatBubble.textContent = "Dinliyorum...";
 
-      // Sohbet başlatma ve durdurma
-      const micButton = document.getElementById('micButton');
-      const chatBubble = document.getElementById('chatBubble');
-      let isChatting = false;
-
-      micButton.onclick = () => {
-        if (isChatting) {
-          stopChat();
-        } else {
-          startChat();
-        }
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        chatBubble.textContent = `Sonuç: ${transcript}`;
+        sendToOpenAI(transcript); 
       };
 
-      function startChat() {
-        chatBubble.textContent = "Lavia: Merhaba! Ben Lavia, seninle sohbet etmek için buradayım.";
-        isChatting = true;
-        micButton.textContent = "🛑 Sohbeti Kapat"; 
-        startVoiceRecognition(); 
-      }
+      recognition.onerror = (event) => {
+        chatBubble.textContent = `Hata: ${event.error}`;
+      };
+    }
+  }
 
-      function stopChat() {
-        chatBubble.textContent = "Lavia: Görüşmek üzere!";
-        isChatting = false;
-        micButton.textContent = "🎙️ Sohbete Başla"; 
-      }
-
-      function startVoiceRecognition() {
-        if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-          chatBubble.textContent = "Bu tarayıcı ses tanımayı desteklemiyor!";
-        } else {
-          const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-          recognition.lang = 'tr-TR';
-          recognition.interimResults = true;
-
-          recognition.start();
-          chatBubble.textContent = "Dinliyorum...";
-
-          recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            chatBubble.textContent = `Sonuç: ${transcript}`;
-            sendToOpenAI(transcript); 
-          };
-
-          recognition.onerror = (event) => {
-            chatBubble.textContent = `Hata: ${event.error}`;
-          };
+  function sendToOpenAI(text) {
+    // Sunucuya yapılan istek loglanabilir
+    console.log('OpenAI API isteği gönderiliyor...');
+    
+    fetch('https://lavia-ai.onrender.com/api/openai', {  
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: text, model: 'gpt-4', max_tokens: 150 }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('API yanıtı alınamadı');
         }
-      }
+        return response.json();  
+      })
+      .then((data) => {
+        console.log('API Yanıtı:', data); // Burada gelen yanıtı logluyoruz
+        if (data && data.reply) {  
+          const answer = data.reply;  
+          speakAnswer(answer);  
+        } else {
+          throw new Error('Geçersiz veri formatı');  
+        }
+      })
+      .catch((error) => {
+        console.error("OpenAI API hatası:", error);
+        chatBubble.textContent = "Bir şeyler ters gitti, lütfen tekrar deneyin.";  
+      });
+  }
 
-      function sendToOpenAI(text) {
-        // Sunucuya yapılan istek loglanabilir
-        console.log('OpenAI API isteği gönderiliyor...');
-        
-        fetch('https://lavia-ai.onrender.com/api/openai', {  
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: text, model: 'gpt-4', max_tokens: 150 }),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error('API yanıtı alınamadı');
-            }
-            return response.json();  
-          })
-          .then((data) => {
-            console.log('API Yanıtı:', data); // Burada gelen yanıtı logluyoruz
-            if (data && data.reply) {  
-              const answer = data.reply;  
-              speakAnswer(answer);  
-            } else {
-              throw new Error('Geçersiz veri formatı');  
-            }
-          })
-          .catch((error) => {
-            console.error("OpenAI API hatası:", error);
-            chatBubble.textContent = "Bir şeyler ters gitti, lütfen tekrar deneyin.";  
-          });
-      }
-
-      function speakAnswer(answer) {
-        const speech = new SpeechSynthesisUtterance(answer);
-        window.speechSynthesis.speak(speech);
-      }
-    </script>
-  </body>
-</html>
+  function speakAnswer(answer) {
+    const speech = new SpeechSynthesisUtterance(answer);
+    window.speechSynthesis.speak(speech);
+  }
+</script>

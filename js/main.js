@@ -13,7 +13,7 @@ function init() {
         0.1,
         1000
     );
-    camera.position.set(0, 2, 5);  // Kamerayı yukarı ve geriye alıyoruz
+    camera.position.set(0, 1.5, 3);  // Kamerayı daha iyi bir açıya getiriyoruz
 
     renderer = new THREE.WebGLRenderer({
         canvas: document.getElementById("laviaCanvas"),
@@ -23,8 +23,11 @@ function init() {
     document.body.appendChild(renderer.domElement);  // Renderer'ı body'ye ekliyoruz
 
     const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(1, 1, 1).normalize();
+    light.position.set(2, 2, 2).normalize();  // Işığın konumunu daha verimli yapıyoruz
     scene.add(light);
+
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);  // Ortam ışığı ekliyoruz
+    scene.add(ambientLight);
 
     loader = new THREE.GLTFLoader();
     loader.load(
@@ -34,7 +37,7 @@ function init() {
             scene.add(model);
 
             console.log('✅ Lavia modeli yüklendi:', model);
-            model.position.set(0, 3, 0);  // Modeli yukarıya taşıyoruz
+            model.position.set(0, 0, 0);  // Modeli merkeze yerleştiriyoruz
             model.scale.set(0.5, 0.5, 0.5);  // Modeli %50 oranında küçültüyoruz
 
             // Modelin boyutunu konsola yazdıralım
@@ -45,6 +48,8 @@ function init() {
             console.error("Model yüklenemedi:", error);
         }
     );
+
+    window.addEventListener('resize', onWindowResize, false);  // Pencere boyutu değiştiğinde yeniden render yapıyoruz
 
     animate();
 }
@@ -58,6 +63,12 @@ function animate() {
     }
 
     renderer.render(scene, camera);
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);  // Pencere boyutuna göre renderer'ı ayarlıyoruz
 }
 
 init();
