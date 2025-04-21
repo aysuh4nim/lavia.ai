@@ -187,7 +187,7 @@
 
       // OpenAI API'ye metni gönderme
       function sendToOpenAI(text) {
-        fetch('/api/OpenAI.js', {
+        fetch('/api/openai.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: text, model: 'gpt-4', max_tokens: 150 }),
