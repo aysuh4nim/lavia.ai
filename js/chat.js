@@ -44,6 +44,8 @@ function startChat(SpeechRecognition) {
             const response = await getAIPrompt(userSpeech);
             chatBubble.textContent = response;
             speak(response);
+            // Sohbetin devam etmesi için tekrar dinlemeye başla
+            recognition.start();
         } catch (err) {
             console.error("Cevap alınamadı:", err);
             chatBubble.textContent = "Bir hata oluştu, lütfen tekrar dene.";
@@ -96,4 +98,3 @@ async function getAIPrompt(text) {
         chatBubble.textContent = "Bir hata oluştu, lütfen tekrar deneyin.";
     }
 }
-
