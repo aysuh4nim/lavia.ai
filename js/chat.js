@@ -3,6 +3,7 @@
 const micBtn = document.getElementById("micButton");
 const chatBubble = document.getElementById("chatBubble");
 let isChatting = false;  // Sohbetin aktif olup olmadığını takip et
+let recognition;  // Mikrofon tanıma nesnesini burada tutacağız
 
 // Mikrofon butonuna tıklama
 micBtn.addEventListener("click", async () => {
@@ -14,9 +15,9 @@ micBtn.addEventListener("click", async () => {
     }
 
     if (isChatting) {
-        stopChat();
+        stopChat();  // Sohbeti durdur
     } else {
-        startChat(SpeechRecognition);
+        startChat(SpeechRecognition);  // Sohbeti başlat
     }
 });
 
@@ -25,9 +26,11 @@ function startChat(SpeechRecognition) {
     micBtn.textContent = "🛑 Sohbeti Kapat";  // Buton metnini değiştir
     chatBubble.textContent = "Mikrofon açıldı, konuşabilirsiniz...";
 
-    const recognition = new SpeechRecognition();
+    recognition = new SpeechRecognition();
     recognition.lang = "tr-TR";
-    recognition.start();
+    recognition.continuous = true;  // Sürekli dinleme
+    recognition.interimResults = true;  // Geçici sonuçları alabilme
+    recognition.start();  // Mikrofonu başlat
 
     recognition.onstart = () => {
         chatBubble.textContent = "Mikrofon açıldı, konuşabilirsiniz...";
@@ -57,6 +60,10 @@ function stopChat() {
     isChatting = false;
     micBtn.textContent = "🎙️ Sohbete Başla";  // Buton metnini eski haline döndür
     chatBubble.textContent = "Lavia: Görüşmek üzere!";
+
+    if (recognition) {
+        recognition.stop();  // Mikrofonu kapat
+    }
 }
 
 function speak(text) {
@@ -89,3 +96,4 @@ async function getAIPrompt(text) {
         chatBubble.textContent = "Bir hata oluştu, lütfen tekrar deneyin.";
     }
 }
+
