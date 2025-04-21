@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { getResponseFromOpenAI } from "./api/openai.js";
+import openaiRouter from "./api/openai.js"; // Artık route şeklinde import
 
 dotenv.config();
 
@@ -21,17 +21,8 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// OpenAI API endpoint
-app.post("/api/openai", async (req, res) => {
-  const { prompt } = req.body;
-  try {
-    const reply = await getResponseFromOpenAI(prompt);
-    res.json({ reply });
-  } catch (error) {
-    console.error("OpenAI API hatası:", error);
-    res.status(500).json({ error: "Bir şeyler ters gitti." });
-  }
-});
+// OpenAI rotasını bağla
+app.use("/api/openai", openaiRouter);
 
 app.listen(PORT, () => {
   console.log(`🚀 Sunucu çalışıyor: http://localhost:${PORT}`);

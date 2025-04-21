@@ -2,10 +2,9 @@
 
 const micBtn = document.getElementById("micButton");
 const chatBubble = document.getElementById("chatBubble");
-let isChatting = false;  // Sohbetin aktif olup olmadığını takip et
-let recognition; // Globalde tanımlanmış bir recognition nesnesi
+let isChatting = false;
+let recognition;
 
-// Mikrofon butonuna tıklama
 micBtn.addEventListener("click", async () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -23,13 +22,13 @@ micBtn.addEventListener("click", async () => {
 
 function startChat(SpeechRecognition) {
     isChatting = true;
-    micBtn.textContent = "🛑 Sohbeti Kapat";  // Buton metnini değiştir
+    micBtn.textContent = "🛑 Sohbeti Kapat";
     chatBubble.textContent = "Mikrofon açıldı, konuşabilirsiniz...";
 
     recognition = new SpeechRecognition();
     recognition.lang = "tr-TR";
-    recognition.continuous = true; // Sürekli dinlemeyi açıyoruz
-    recognition.interimResults = true; // Geçici sonuçlar almayı açıyoruz
+    recognition.continuous = true;
+    recognition.interimResults = true;
     recognition.start();
 
     recognition.onstart = () => {
@@ -37,17 +36,24 @@ function startChat(SpeechRecognition) {
     };
 
     recognition.onresult = async (event) => {
-        const userSpeech = event.results[0][0].transcript;
-        chatBubble.textContent = "Düşünüyorum...";
+        const resultIndex = event.resultIndex;
+        const result = event.results[resultIndex];
+        const userSpeech = result[0].transcript;
 
-        // Her yeni cümlede API'ye istek gönderelim
-        try {
-            const response = await getAIPrompt(userSpeech);
-            chatBubble.textContent = response;
-            speak(response);
-        } catch (err) {
-            console.error("Cevap alınamadı:", err);
-            chatBubble.textContent = "Bir hata oluştu, lütfen tekrar dene.";
+        if (result.isFinal) {
+            chatBubble.textContent = "Düşünüyorum...";
+
+            try {
+                const response = await getAIPrompt(userSpeech);
+                chatBubble.textContent = response;
+                speak(response);
+            } catch (err) {
+                console.error("Cevap alınamadı:", err);
+                chatBubble.textContent = "Bir hata oluştu, lütfen tekrar dene.";
+            }
+        } else {
+            // Geçici konuşma sonucu (kullanıcı konuşmaya devam ederken gösterilir)
+            chatBubble.textContent = `Sen: ${userSpeech}`;
         }
     };
 
@@ -59,9 +65,11 @@ function startChat(SpeechRecognition) {
 
 function stopChat() {
     isChatting = false;
-    micBtn.textContent = "🎙️ Sohbete Başla";  // Buton metnini eski haline döndür
+    micBtn.textContent = "🎙️ Sohbete Başla";
     chatBubble.textContent = "Lavia: Görüşmek üzere!";
-    recognition.stop(); // Sohbeti durduruyoruz
+    if (recognition) {
+        recognition.stop();
+    }
 }
 
 function speak(text) {
@@ -74,7 +82,7 @@ function speak(text) {
 async function getAIPrompt(text) {
     try {
         console.log("API'ye gönderilen metin:", text);
-        const response = await fetch("/api/openai", {  
+        const response = await fetch("/api/openai", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -87,8 +95,8 @@ async function getAIPrompt(text) {
         }
 
         const data = await response.json();
-        console.log("API'den alınan yanıt:", data); 
-        return data.reply || "Üzgünüm, anlamadım.";  
+        console.log("API'den alınan yanıt:", data);
+        return data.reply || "Üzgünüm, anlamadım.";
     } catch (error) {
         console.error("API Hatası:", error);
         chatBubble.textContent = "Bir hata oluştu, lütfen tekrar deneyin.";
