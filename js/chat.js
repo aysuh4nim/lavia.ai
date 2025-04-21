@@ -2,14 +2,28 @@
 
 const micBtn = document.getElementById("micButton");
 const chatBubble = document.getElementById("chatBubble");
+let isChatting = false;  // Sohbetin aktif olup olmadığını takip et
 
-micBtn.addEventListener("click", () => {
+// Mikrofon butonuna tıklama
+micBtn.addEventListener("click", async () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
         chatBubble.textContent = "Maalesef, bu özellik tarayıcınızda desteklenmiyor.";
         return;
     }
+
+    if (isChatting) {
+        stopChat();
+    } else {
+        startChat(SpeechRecognition);
+    }
+});
+
+function startChat(SpeechRecognition) {
+    isChatting = true;
+    micBtn.textContent = "🛑 Sohbeti Kapat";  // Buton metnini değiştir
+    chatBubble.textContent = "Mikrofon açıldı, konuşabilirsiniz...";
 
     const recognition = new SpeechRecognition();
     recognition.lang = "tr-TR";
@@ -37,7 +51,13 @@ micBtn.addEventListener("click", () => {
         console.error("Mikrofon hatası:", event.error);
         chatBubble.textContent = "Mikrofonla ilgili bir hata oluştu.";
     };
-});
+}
+
+function stopChat() {
+    isChatting = false;
+    micBtn.textContent = "🎙️ Sohbete Başla";  // Buton metnini eski haline döndür
+    chatBubble.textContent = "Lavia: Görüşmek üzere!";
+}
 
 function speak(text) {
     const synth = window.speechSynthesis;
@@ -69,4 +89,3 @@ async function getAIPrompt(text) {
         chatBubble.textContent = "Bir hata oluştu, lütfen tekrar deneyin.";
     }
 }
-

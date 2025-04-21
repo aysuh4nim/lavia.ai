@@ -133,6 +133,81 @@
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
+
+      // Sohbet başlatma ve durdurma
+      const micButton = document.getElementById('micButton');
+      const chatBubble = document.getElementById('chatBubble');
+      let isChatting = false;
+
+      micButton.onclick = () => {
+        if (isChatting) {
+          stopChat();
+        } else {
+          startChat();
+        }
+      };
+
+      function startChat() {
+        // İlk mesaj: Lavia'nın mesajı
+        chatBubble.textContent = "Lavia: Merhaba! Ben Lavia, seninle sohbet etmek için buradayım.";
+        isChatting = true;
+        micButton.textContent = "🛑 Sohbeti Kapat"; // Buton metnini değiştir
+        startVoiceRecognition(); // Sesli yanıt başlat
+      }
+
+      function stopChat() {
+        chatBubble.textContent = "Lavia: Görüşmek üzere!";
+        isChatting = false;
+        micButton.textContent = "🎙️ Sohbete Başla"; // Buton metnini eski haline döndür
+      }
+
+      // Ses tanıma başlatma
+      function startVoiceRecognition() {
+        if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+          chatBubble.textContent = "Bu tarayıcı ses tanımayı desteklemiyor!";
+        } else {
+          const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+          recognition.lang = 'tr-TR';
+          recognition.interimResults = true;
+
+          recognition.start();
+          chatBubble.textContent = "Dinliyorum...";
+
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            chatBubble.textContent = `Sonuç: ${transcript}`;
+            sendToOpenAI(transcript); // OpenAI API'ye gönder
+          };
+
+          recognition.onerror = (event) => {
+            chatBubble.textContent = `Hata: ${event.error}`;
+          };
+        }
+      }
+
+      // OpenAI API'ye metni gönderme
+      function sendToOpenAI(text) {
+        fetch('/api/OpenAI.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: text, model: 'gpt-4', max_tokens: 150 }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const answer = data.choices[0].text;
+            speakAnswer(answer); // OpenAI yanıtını sesli okutma
+          })
+          .catch((error) => {
+            console.error("OpenAI API hatası:", error);
+          });
+      }
+
+      // OpenAI yanıtını sesli okutma
+      function speakAnswer(answer) {
+        const speech = new SpeechSynthesisUtterance(answer);
+        window.speechSynthesis.speak(speech);
+      }
     </script>
   </body>
 </html>
+
