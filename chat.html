@@ -148,7 +148,6 @@
       };
 
       function startChat() {
-       
         chatBubble.textContent = "Lavia: Merhaba! Ben Lavia, seninle sohbet etmek için buradayım.";
         isChatting = true;
         micButton.textContent = "🛑 Sohbeti Kapat"; 
@@ -161,7 +160,6 @@
         micButton.textContent = "🎙️ Sohbete Başla"; 
       }
 
-      
       function startVoiceRecognition() {
         if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
           chatBubble.textContent = "Bu tarayıcı ses tanımayı desteklemiyor!";
@@ -185,8 +183,10 @@
         }
       }
 
-      
       function sendToOpenAI(text) {
+        // Sunucuya yapılan istek loglanabilir
+        console.log('OpenAI API isteği gönderiliyor...');
+        
         fetch('https://lavia-ai.onrender.com/api/openai', {  
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -199,6 +199,7 @@
             return response.json();  
           })
           .then((data) => {
+            console.log('API Yanıtı:', data); // Burada gelen yanıtı logluyoruz
             if (data && data.reply) {  
               const answer = data.reply;  
               speakAnswer(answer);  
@@ -212,7 +213,6 @@
           });
       }
 
-      
       function speakAnswer(answer) {
         const speech = new SpeechSynthesisUtterance(answer);
         window.speechSynthesis.speak(speech);
