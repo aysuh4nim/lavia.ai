@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const router = express.Router();
-const apiKey = process.env.OPENAI_API_KEY;
+const apiKey = process.env.OPENAI_API_KEY; // API_KEY yerine OPENAI_API_KEY kullanılıyor
 
 router.post("/", async (req, res) => {
     const { prompt } = req.body;
@@ -40,3 +40,4 @@ router.post("/", async (req, res) => {
 });
 
 export default router;
+
