@@ -3,7 +3,7 @@
 const micBtn = document.getElementById("micButton");
 const chatBubble = document.getElementById("chatBubble");
 let isChatting = false;  // Sohbetin aktif olup olmadığını takip et
-let recognition;  // Mikrofon tanıma nesnesini burada tutacağız
+let recognition; // Globalde tanımlanmış bir recognition nesnesi
 
 // Mikrofon butonuna tıklama
 micBtn.addEventListener("click", async () => {
@@ -15,9 +15,9 @@ micBtn.addEventListener("click", async () => {
     }
 
     if (isChatting) {
-        stopChat();  // Sohbeti durdur
+        stopChat();
     } else {
-        startChat(SpeechRecognition);  // Sohbeti başlat
+        startChat(SpeechRecognition);
     }
 });
 
@@ -28,9 +28,9 @@ function startChat(SpeechRecognition) {
 
     recognition = new SpeechRecognition();
     recognition.lang = "tr-TR";
-    recognition.continuous = true;  // Sürekli dinleme
-    recognition.interimResults = true;  // Geçici sonuçları alabilme
-    recognition.start();  // Mikrofonu başlat
+    recognition.continuous = true; // Sürekli dinlemeyi açıyoruz
+    recognition.interimResults = true; // Geçici sonuçlar almayı açıyoruz
+    recognition.start();
 
     recognition.onstart = () => {
         chatBubble.textContent = "Mikrofon açıldı, konuşabilirsiniz...";
@@ -40,12 +40,11 @@ function startChat(SpeechRecognition) {
         const userSpeech = event.results[0][0].transcript;
         chatBubble.textContent = "Düşünüyorum...";
 
+        // Her yeni cümlede API'ye istek gönderelim
         try {
             const response = await getAIPrompt(userSpeech);
             chatBubble.textContent = response;
             speak(response);
-            // Sohbetin devam etmesi için tekrar dinlemeye başla
-            recognition.start();
         } catch (err) {
             console.error("Cevap alınamadı:", err);
             chatBubble.textContent = "Bir hata oluştu, lütfen tekrar dene.";
@@ -62,10 +61,7 @@ function stopChat() {
     isChatting = false;
     micBtn.textContent = "🎙️ Sohbete Başla";  // Buton metnini eski haline döndür
     chatBubble.textContent = "Lavia: Görüşmek üzere!";
-
-    if (recognition) {
-        recognition.stop();  // Mikrofonu kapat
-    }
+    recognition.stop(); // Sohbeti durduruyoruz
 }
 
 function speak(text) {
@@ -77,7 +73,7 @@ function speak(text) {
 
 async function getAIPrompt(text) {
     try {
-        console.log("API'ye gönderilen metin:", text); 
+        console.log("API'ye gönderilen metin:", text);
         const response = await fetch("/api/openai", {  
             method: "POST",
             headers: {
