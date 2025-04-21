@@ -48,8 +48,8 @@ function speak(text) {
 
 async function getAIPrompt(text) {
     try {
-        console.log("API'ye gönderilen metin:", text); // Hata ayıklama: Konsola yazdır
-        const response = await fetch("/ask", {  // "/ask" endpointine istekte bulunuyoruz
+        console.log("API'ye gönderilen metin:", text); 
+        const response = await fetch("/api/openai", {  
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -62,10 +62,11 @@ async function getAIPrompt(text) {
         }
 
         const data = await response.json();
-        console.log("API'den alınan yanıt:", data); // Hata ayıklama: Konsola yazdır
-        return data.answer || "Üzgünüm, anlamadım.";  // Yanıtı al ve döndür
+        console.log("API'den alınan yanıt:", data); 
+        return data.reply || "Üzgünüm, anlamadım.";  
     } catch (error) {
         console.error("API Hatası:", error);
         chatBubble.textContent = "Bir hata oluştu, lütfen tekrar deneyin.";
     }
 }
+
