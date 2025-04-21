@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import cors from "cors";  // CORS paketini içeri aktarın
 import openaiRouter from "./api/openai.js"; // Artık route şeklinde import
 
 dotenv.config();
@@ -11,6 +12,12 @@ const PORT = process.env.PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// CORS middleware'ini kullan
+app.use(cors()); // Tüm kaynaklardan gelen istekleri kabul eder
+
+// Eğer sadece belirli bir kaynağa izin vermek isterseniz:
+// app.use(cors({ origin: 'http://localhost:3000' })); 
 
 // Middleware
 app.use(express.json());
@@ -27,3 +34,4 @@ app.use("/api/openai", openaiRouter);
 app.listen(PORT, () => {
   console.log(`🚀 Sunucu çalışıyor: http://localhost:${PORT}`);
 });
+
