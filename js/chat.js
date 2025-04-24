@@ -1,4 +1,4 @@
-"use strict";
+// chat.js
 
 const micBtn = document.getElementById("micButton");
 const chatBubble = document.getElementById("chatBubble");
@@ -44,7 +44,7 @@ function startChat(SpeechRecognition) {
             chatBubble.textContent = "Düşünüyorum...";
 
             try {
-                const response = await getAIPrompt(userSpeech);
+                const response = await getAIPrompt(userSpeech); // Sunucuya yönlendirme
                 chatBubble.textContent = response;
                 speak(response);
             } catch (err) {
@@ -52,7 +52,6 @@ function startChat(SpeechRecognition) {
                 chatBubble.textContent = "Bir hata oluştu, lütfen tekrar dene.";
             }
         } else {
-            // Geçici konuşma sonucu (kullanıcı konuşmaya devam ederken gösterilir)
             chatBubble.textContent = `Sen: ${userSpeech}`;
         }
     };
@@ -80,25 +79,25 @@ function speak(text) {
 }
 
 async function getAIPrompt(text) {
-    try {
-        console.log("API'ye gönderilen metin:", text);
-        const response = await fetch("/api/openai", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ prompt: text })
-        });
+    console.log("API'ye gönderilen metin:", text);
 
-        if (!response.ok) {
-            throw new Error("API yanıt vermedi.");
-        }
+    // Sunucuya istek gönderiyoruz
+    const response = await fetch('/api/huggingface', { // Sunucudaki endpoint
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            prompt: text,
+        }),
+    });
 
-        const data = await response.json();
-        console.log("API'den alınan yanıt:", data);
-        return data.reply || "Üzgünüm, anlamadım.";
-    } catch (error) {
-        console.error("API Hatası:", error);
-        chatBubble.textContent = "Bir hata oluştu, lütfen tekrar deneyin.";
+    const data = await response.json();
+
+    // Yanıt yoksa hata mesajı
+    if (!data || !data.generated_text) {
+        throw new Error("Yanıt alınamadı");
     }
+
+    return data.generated_text; // Gerçek yanıtı döndür
 }

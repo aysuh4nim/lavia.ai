@@ -2,8 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import cors from "cors";  // CORS paketini içeri aktarın
-import openaiRouter from "./api/openai.js"; // Artık route şeklinde import
+import cors from "cors";
+import huggingfaceRouter from "./api/huggingface.js"; // Yeni Hugging Face router'ı import et
 
 dotenv.config();
 
@@ -14,10 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // CORS middleware'ini kullan
-app.use(cors()); // Tüm kaynaklardan gelen istekleri kabul eder
-
-// Eğer sadece belirli bir kaynağa izin vermek isterseniz:
-// app.use(cors({ origin: 'http://localhost:3000' })); 
+app.use(cors()); 
 
 // Middleware
 app.use(express.json());
@@ -28,10 +25,15 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// OpenAI rotasını bağla
-app.use("/api/openai", openaiRouter);
+// Hugging Face API rotasını bağla
+app.use("/api/huggingface", huggingfaceRouter); // Artık buradan Hugging Face API'ye erişebileceğiz
+
+// Sunucu tarafında hata loglama
+app.use((err, req, res, next) => {
+    console.error('Sunucu Hatası:', err.stack);  
+    res.status(500).send('Bir şeyler ters gitti!');
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 Sunucu çalışıyor: http://localhost:${PORT}`);
 });
-
