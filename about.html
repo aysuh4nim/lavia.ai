@@ -12,56 +12,58 @@
       overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
       color: white;
+      height: 100%;
     }
 
-    .video-background {
+
+    .background-container video,
+    .background-container img {
+      
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      background: rgba(0, 0, 0, 0.4);
       z-index: -1;
     }
 
-    .content {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    
+    footer {
+      background-color: #222;
+      color: #fff;
       text-align: center;
-      background: rgba(0, 0, 0, 0.4);
+      padding: 20px 0;
+      z-index: 1;
     }
 
-    .content h1 {
-      font-size: 3em;
-      margin-bottom: 20px;
-    }
-
-    .content p {
-      font-size: 1.2em;
-      max-width: 600px;
-      margin: auto;
-    }
   </style>
 </head>
 <body>
-  <video autoplay muted loop class="video-background">
-    <source src="./assets/world.mp4" type="video/mp4">
-    Tarayıcınız video etiketini desteklemiyor.
-  </video>
 
-  <div class="content">
-    <div>
-      <h1>AysAi Hakkında</h1>
-      <p>
-        AysAi, insanlarla doğal bir şekilde konuşabilen, mimiklerle tepkiler verebilen,
-        gelişmiş yapay zeka destekli bir dijital asistandır. Görsel ve işitsel etkileşim
-        yetenekleriyle, kullanıcıya özel deneyimler sunar.
-      </p>
-    </div>
+  <div class="background-container">
+    <video autoplay muted loop>
+      <source src="assets/world.mp4" type="video/mp4">
+      Tarayıcınız video etiketini desteklemiyor.
+    </video>
   </div>
+
+  
+
+  
+  <footer>
+    © 2025 AysAi. Tüm Hakları Saklıdır.
+  </footer>
+
 </body>
 </html>
+
