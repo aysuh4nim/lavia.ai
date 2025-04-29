@@ -176,7 +176,7 @@
             const transcript = event.results[0][0].transcript;
             if (event.results[0].isFinal) {
               chatBubble.textContent = `Sonuç: ${transcript}`;
-              await sendToHuggingFace(transcript); // Hugging Face API'ye gönder
+              await sendToServer(transcript); // API'ye gönder
             }
           };
 
@@ -186,21 +186,30 @@
         }
       }
 
-      async function sendToHuggingFace(text) {
-        const response = await fetch('https://api-inference.huggingface.co/models/vblagoje/gpt2-lora-finetuned-sentiment', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            inputs: text,
-          }),
-        });
+      async function sendToServer(text) {
+        try {
+          console.log("API'ye gönderilen metin:", text);
+          const response = await fetch('/api/huggingface', { // API URL'yi güncelledik
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              prompt: text, // Verilen metni body'e ekliyoruz
+            }),
+          });
 
-        const data = await response.json();
-        const answer = data[0]?.generated_text || "Üzgünüm, bir hata oluştu.";
-        speakAnswer(answer);
+          if (!response.ok) {
+            throw new Error('API isteği başarısız oldu');
+          }
+
+          const data = await response.json();
+          const answer = data.reply || "Üzgünüm, bir hata oluştu.";
+          speakAnswer(answer);
+        } catch (error) {
+          console.error("Hata:", error);
+          chatBubble.textContent = `Bir hata oluştu: ${error.message}`;
+        }
       }
 
       function speakAnswer(answer) {

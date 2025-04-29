@@ -1,9 +1,9 @@
-// chat.js
-
 const micBtn = document.getElementById("micButton");
 const chatBubble = document.getElementById("chatBubble");
 let isChatting = false;
 let recognition;
+let audioBlob;
+let mediaRecorder;
 
 micBtn.addEventListener("click", async () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -33,6 +33,7 @@ function startChat(SpeechRecognition) {
 
     recognition.onstart = () => {
         chatBubble.textContent = "Mikrofon açıldı, konuşabilirsiniz...";
+        startRecording();  // Ses kaydını başlatıyoruz
     };
 
     recognition.onresult = async (event) => {
@@ -69,6 +70,7 @@ function stopChat() {
     if (recognition) {
         recognition.stop();
     }
+    stopRecording();  // Kaydı durduruyoruz
 }
 
 function speak(text) {
@@ -93,11 +95,73 @@ async function getAIPrompt(text) {
     });
 
     const data = await response.json();
+    console.log("Hugging Face yanıtı:", data);
 
     // Yanıt yoksa hata mesajı
-    if (!data || !data.generated_text) {
+    if (!data || !data.reply) {
         throw new Error("Yanıt alınamadı");
     }
 
-    return data.generated_text; // Gerçek yanıtı döndür
+    return data.reply; // Gerçek yanıtı döndür
 }
+
+// Kaydedilen ses dosyasını base64 formatına çevirme ve backend'e gönderme
+async function sendAudioToBackend() {
+    if (!audioBlob) {
+        alert("Lütfen önce ses kaydını başlatın.");
+        return;
+    }
+
+    // Ses dosyasını base64'e çevirme
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+        const base64Audio = reader.result.split(',')[1]; // Base64 formatına çeviriyoruz
+        await sendToServer(base64Audio);
+    };
+    reader.readAsDataURL(audioBlob);  // Base64 formatında okuma işlemi
+}
+
+// Kaydın başlatılması
+function startRecording() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then((stream) => {
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = (event) => {
+                audioBlob = event.data;
+            };
+            mediaRecorder.start();
+        })
+        .catch((error) => {
+            console.error("Ses kaydı başlatılamadı:", error);
+        });
+}
+
+// Kaydın durdurulması
+function stopRecording() {
+    if (mediaRecorder) {
+        mediaRecorder.stop();
+    }
+}
+
+// Base64 formatındaki ses verisini backend'e gönderme
+async function sendToServer(base64Audio) {
+    try {
+        const response = await fetch('http://localhost:3000/process-audio', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                audioData: base64Audio,  // Base64 formatındaki ses verisini gönderiyoruz
+            }),
+        });
+
+        const data = await response.json();
+        console.log("Model Yanıtı:", data.generatedText); // Model yanıtını console'a yazdırıyoruz
+        chatBubble.textContent = data.generatedText; // Model yanıtını kullanıcıya gösteriyoruz
+        speak(data.generatedText); // Modelin cevabını sesli okuma
+    } catch (error) {
+        console.error('API Hatası:', error.message);
+    }
+}
+
