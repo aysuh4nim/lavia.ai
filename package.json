@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.14",
     "axios": "^1.9.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -17,6 +18,7 @@
     "gltf-loader": "^1.0.0",
     "node-fetch": "^3.3.2",
     "openai": "^4.94.0",
+    "tailwindcss": "^4.1.14",
     "three": "^0.175.0"
   },
   "devDependencies": {
