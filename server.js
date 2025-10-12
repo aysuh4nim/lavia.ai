@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
-import huggingfaceRouter from "./api/huggingface.js"; // Hugging Face router'ı import et
 
 dotenv.config(); // .env dosyasını yükle
 
@@ -32,8 +31,6 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Hugging Face API isteği
-app.use("/api/huggingface", huggingfaceRouter);
 
 // Genel hata yakalama middleware'i
 app.use((err, req, res, next) => {
