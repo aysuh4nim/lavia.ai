@@ -24,7 +24,7 @@ Lavia artık konuşaibiliyor (:
 
 - AŞAĞIDA VERDİĞİM LİNK VE GİRİŞ BİLGİLERİNİ KULLANARAK SUPX.Aİ ÜZERİNDE BU ASİSTANI EĞİTEBİLİRSİN
 - https://supx.ai/login
-- email : beratbeywinchester@gmail.com şifre: 123123
+- email : beratbeywinchester@gmail.com 
 - https://supx.ai/dashboard adresinden asistanını konuşarak eğitebilirsin
 
 Tarih: 2025-10-13
